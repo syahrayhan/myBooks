@@ -46,7 +46,7 @@ function createButton(buttonTypeClass, string, eventListener) {
   const button = document.createElement("button");
   button.classList.add(buttonTypeClass);
   button.innerText = string;
-  button.addEventListener("click", function (event) {
+  button.addEventListener("click",  (event) => {
     eventListener(event);
   });
 
@@ -107,7 +107,13 @@ function addBookToFinishedRead(taskElement) {
   const bookYear = taskElement.querySelector(".book_item > p > .bookYear").innerText;
 
   const newBook = makeBook(bookTitle, bookWriter, bookYear, true);
+  console.log(taskElement)
+  console.log(taskElement[BOOK_ITEMID])
   const book = findBookById(taskElement[BOOK_ITEMID]);
+
+  console.log(newBook)
+  console.log(book)
+  console.log(book.isCompleted)
   book.isCompleted = true;
   newBook[BOOK_ITEMID] = book.id;
 
@@ -137,7 +143,6 @@ function readAgainBookFromFinishedRead(taskElement) {
   const newBook = makeBook(bookTitle, bookWriter, bookYear, false);
 
   const book = findBookById(taskElement[BOOK_ITEMID]);
-  // console.log(book)
   book.isCompleted = false;
   newBook[BOOK_ITEMID] = book.id;
 

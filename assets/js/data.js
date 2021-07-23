@@ -20,7 +20,6 @@ function loadDataFromStorage(){
     const serializedData = localStorage.getItem(STORAGE_BOOKS_KEY)
 
     let data = JSON.parse(serializedData)
-    console.log(data)
 
     if(data !== null) books = data
 
@@ -42,8 +41,6 @@ function composeBookObject(title, author, year, isCompleted){
 }
 
 function findBookById(bookId){
-    console.log(bookId)
-    console.log(books)
     for (book of books){
         if(book.id === bookId)  return book
     }
@@ -66,7 +63,9 @@ function refreshDataFromBooks(){
 
     for (book of books){
         const newBook = makeBook(book.title, book.author, book.year, book.isCompleted)
-   
+        newBook[BOOK_ITEMID] = book.id
+
+
         if(book.isCompleted){
             listFinishedReadingBook.append(newBook)
         }else {
