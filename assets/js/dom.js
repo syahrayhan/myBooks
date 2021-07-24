@@ -10,20 +10,20 @@ function makeBook(book_title, writer, year, isFinished) {
   const textYear = document.createElement("p");
   textYear.innerText = "Year : ";
 
-  const spanTitle = document.createElement("span")
-  spanTitle.innerText = book_title
-  spanTitle.classList.add("bookTitle")
-  textTitle.append(spanTitle)
+  const spanTitle = document.createElement("span");
+  spanTitle.innerText = book_title;
+  spanTitle.classList.add("bookTitle");
+  textTitle.append(spanTitle);
 
-  const spanWriter = document.createElement("span")
-  spanWriter.innerText = writer
-  spanWriter.classList.add("bookWriter")
-  textWriter.append(spanWriter)
+  const spanWriter = document.createElement("span");
+  spanWriter.innerText = writer;
+  spanWriter.classList.add("bookWriter");
+  textWriter.append(spanWriter);
 
-  const spanYear = document.createElement("span")
-  spanYear.innerText = year
-  spanYear.classList.add("bookYear")
-  textYear.append(spanYear)
+  const spanYear = document.createElement("span");
+  spanYear.innerText = year;
+  spanYear.classList.add("bookYear");
+  textYear.append(spanYear);
 
   const articleElement = document.createElement("article");
   const divElement = document.createElement("div");
@@ -46,7 +46,7 @@ function createButton(buttonTypeClass, string, eventListener) {
   const button = document.createElement("button");
   button.classList.add(buttonTypeClass);
   button.innerText = string;
-  button.addEventListener("click",  (event) => {
+  button.addEventListener("click", (event) => {
     eventListener(event);
   });
 
@@ -71,30 +71,47 @@ function createDeleteButton() {
   });
 }
 
-function addBook() {
+function addBook(isNewBook, data) {
   const listNotFinishedReadingBook = document.getElementById(
     NOTFINISHED_READ_BOOK_ID
   );
   const listFinishedReadingBook = document.getElementById(
     FINISHED_READ_BOOK_ID
   );
-  const bookTitle = document.getElementById("inputBookTitle").value;
-  const bookWriter = document.getElementById("inputBookAuthor").value;
-  const bookYear = document.getElementById("inputBookYear").value;
-  const isFinished = document.getElementById("inputBookIsComplete").checked;
+  if (isNewBook) {
+    const bookTitle = document.getElementById("inputBookTitle").value;
+    const bookWriter = document.getElementById("inputBookAuthor").value;
+    const bookYear = document.getElementById("inputBookYear").value;
+    const isFinished = document.getElementById("inputBookIsComplete").checked;
 
-  const addBook = makeBook(bookTitle, bookWriter, bookYear, isFinished);
-  const bookObject = composeBookObject(bookTitle, bookWriter, bookYear, isFinished);
+    const addBook = makeBook(bookTitle, bookWriter, bookYear, isFinished);
+    const bookObject = composeBookObject(
+      bookTitle,
+      bookWriter,
+      bookYear,
+      isFinished
+    );
 
-  addBook[BOOK_ITEMID] = bookObject.id;
-  books.push(bookObject);
+    addBook[BOOK_ITEMID] = bookObject.id;
+    books.push(bookObject);
 
-  if (isFinished) {
-    listFinishedReadingBook.append(addBook);
-    updateDataToStorage();
-  } else {
-    listNotFinishedReadingBook.append(addBook);
-    updateDataToStorage();
+    if (isFinished) {
+      listFinishedReadingBook.append(addBook);
+      updateDataToStorage();
+    } else {
+      listNotFinishedReadingBook.append(addBook);
+      updateDataToStorage();
+    }
+  }else if(data != undefined){
+    const addBook = makeBook(data.title, data.author, data.year, data.isCompleted);
+    addBook[BOOK_ITEMID] = data.id;
+    console.log("sedang dicari")
+
+    if (data.isCompleted) {
+      listFinishedReadingBook.append(addBook);
+    } else {
+      listNotFinishedReadingBook.append(addBook);
+    }
   }
 }
 
@@ -102,18 +119,19 @@ function addBookToFinishedRead(taskElement) {
   const listFinishedReadingBook = document.getElementById(
     FINISHED_READ_BOOK_ID
   );
-  const bookTitle = taskElement.querySelector(".book_item > h3 > .bookTitle").innerText;
-  const bookWriter = taskElement.querySelector(".book_item > p > .bookWriter").innerText;
-  const bookYear = taskElement.querySelector(".book_item > p > .bookYear").innerText;
+  const bookTitle = taskElement.querySelector(
+    ".book_item > h3 > .bookTitle"
+  ).innerText;
+  const bookWriter = taskElement.querySelector(
+    ".book_item > p > .bookWriter"
+  ).innerText;
+  const bookYear = taskElement.querySelector(
+    ".book_item > p > .bookYear"
+  ).innerText;
 
   const newBook = makeBook(bookTitle, bookWriter, bookYear, true);
-  console.log(taskElement)
-  console.log(taskElement[BOOK_ITEMID])
   const book = findBookById(taskElement[BOOK_ITEMID]);
 
-  console.log(newBook)
-  console.log(book)
-  console.log(book.isCompleted)
   book.isCompleted = true;
   newBook[BOOK_ITEMID] = book.id;
 
@@ -121,6 +139,36 @@ function addBookToFinishedRead(taskElement) {
   taskElement.remove();
 
   updateDataToStorage();
+}
+
+function searchBookByTitle() {
+  const bookTitle = document.querySelector("#searchBookTitle").value;
+
+  let findBook = findBookByTitle(bookTitle);
+
+  if (findBook) {
+    clearBook();
+    for (thebooks of findBook) {
+      addBook(false, thebooks);
+    }
+  }else {
+    clearBook();
+    for (thebooks of books) {
+      addBook(false, thebooks);
+    }
+  }
+}
+
+function clearBook() {
+  const listNotFinishedReadingBook = document.getElementById(
+    NOTFINISHED_READ_BOOK_ID
+  );
+  const listFinishedReadingBook = document.getElementById(
+    FINISHED_READ_BOOK_ID
+  );
+
+  listNotFinishedReadingBook.innerHTML = "";
+  listFinishedReadingBook.innerHTML = "";
 }
 
 function removeBook(taskElement) {
@@ -136,9 +184,15 @@ function readAgainBookFromFinishedRead(taskElement) {
   const listNotFinishedReadingBook = document.getElementById(
     NOTFINISHED_READ_BOOK_ID
   );
-  const bookTitle = taskElement.querySelector(".book_item > h3 > .bookTitle").innerText;
-  const bookWriter = taskElement.querySelector(".book_item > p > .bookWriter").innerText;
-  const bookYear = taskElement.querySelector(".book_item > p > .bookYear").innerText;
+  const bookTitle = taskElement.querySelector(
+    ".book_item > h3 > .bookTitle"
+  ).innerText;
+  const bookWriter = taskElement.querySelector(
+    ".book_item > p > .bookWriter"
+  ).innerText;
+  const bookYear = taskElement.querySelector(
+    ".book_item > p > .bookYear"
+  ).innerText;
 
   const newBook = makeBook(bookTitle, bookWriter, bookYear, false);
 
