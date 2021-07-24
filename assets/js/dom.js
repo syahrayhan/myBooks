@@ -102,10 +102,15 @@ function addBook(isNewBook, data) {
       listNotFinishedReadingBook.append(addBook);
       updateDataToStorage();
     }
-  }else if(data != undefined){
-    const addBook = makeBook(data.title, data.author, data.year, data.isCompleted);
+  } else if (data != undefined) {
+    const addBook = makeBook(
+      data.title,
+      data.author,
+      data.year,
+      data.isCompleted
+    );
     addBook[BOOK_ITEMID] = data.id;
-    console.log("sedang dicari")
+    console.log("sedang dicari");
 
     if (data.isCompleted) {
       listFinishedReadingBook.append(addBook);
@@ -151,7 +156,7 @@ function searchBookByTitle() {
     for (thebooks of findBook) {
       addBook(false, thebooks);
     }
-  }else {
+  } else {
     clearBook();
     for (thebooks of books) {
       addBook(false, thebooks);
@@ -173,11 +178,11 @@ function clearBook() {
 
 function removeBook(taskElement) {
   const bookPosition = findBookIndex(taskElement[BOOK_ITEMID]);
-  books.splice(bookPosition, 1);
-
-  taskElement.remove();
-
-  updateDataToStorage();
+  if (confirm("Are you sure you delete this book ?")) {
+    books.splice(bookPosition, 1);
+    taskElement.remove();
+    updateDataToStorage();
+  }
 }
 
 function readAgainBookFromFinishedRead(taskElement) {

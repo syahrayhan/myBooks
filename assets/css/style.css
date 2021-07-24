@@ -28,8 +28,8 @@ input {
 }
 
 main {
-    max-width: 800px;
-    width: 80%;
+    max-width: 900px;
+    width: 90%;
     margin: 0 auto;
     padding: 16px;
 
@@ -183,4 +183,25 @@ main {
     color: white;
 
     padding: 6px;
+}
+
+.theBook {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.theBook > .book_shelf:first-child {
+    width: 100%;
+    margin-right: 5px;
+}
+
+.theBook > .book_shelf:last-child {
+    width: 100%;
+    margin-left: 5px;
+}
+
+@media screen and (max-width: 817px) {
+    .theBook {
+        flex-direction: column;
+    }
 }
